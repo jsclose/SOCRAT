@@ -2,7 +2,7 @@
 
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
-module.exports = class ChartsNormalChart extends BaseService
+module.exports = class GetParams extends BaseService
 
   initialize: ->
     @distanceFromMean = 5
@@ -74,10 +74,10 @@ module.exports = class ChartsNormalChart extends BaseService
   drawNormalCurve: (data, width, height, _graph) ->
 
     toolTipElement = _graph.append('div')
-    .attr('class', 'tooltipGauss')
-    .attr('position', 'absolute')
-    .attr('width', 15)
-    .attr('height', 10)
+      .attr('class', 'tooltipGauss')
+      .attr('position', 'absolute')
+      .attr('width', 15)
+      .attr('height', 10)
 
     showToolTip: (value, positionX, positionY) ->
       toolTipElement.style('display', 'block')
@@ -110,63 +110,63 @@ module.exports = class ChartsNormalChart extends BaseService
     yScale = d3.scale.linear().range([height-padding, 0]).domain([bottomBound, topBound])
 
     xAxis = d3.svg.axis().ticks(20)
-    .scale(xScale)
+      .scale(xScale)
 
     yAxis = d3.svg.axis()
-    .scale(yScale)
-    .ticks(12)
-    .tickPadding(0)
-    .orient("right")
+      .scale(yScale)
+      .ticks(12)
+      .tickPadding(0)
+      .orient("right")
 
     lineGen = d3.svg.line()
-    .x (d) -> xScale(d.x)
-    .y (d) -> yScale(d.y)
-    .interpolate("basis")
+      .x (d) -> xScale(d.x)
+      .y (d) -> yScale(d.y)
+      .interpolate("basis")
 
     _graph.append('svg:path')
-    .attr('d', lineGen(gaussianCurveData))
-    .data([gaussianCurveData])
-    .attr('stroke', 'black')
-    .attr('stroke-width', 0)
-    .on('mousemove', (d) -> showToolTip(getZ(xScale.invert(d3.event.x),mean,standardDerivation).toLocaleString(),d3.event.x,d3.event.y))
-    .on('mouseout', (d) -> hideToolTip())
-    .attr('fill', "aquamarine")
+      .attr('d', lineGen(gaussianCurveData))
+      .data([gaussianCurveData])
+      .attr('stroke', 'black')
+      .attr('stroke-width', 0)
+      .on('mousemove', (d) -> showToolTip(getZ(xScale.invert(d3.event.x),mean,standardDerivation).toLocaleString(),d3.event.x,d3.event.y))
+      .on('mouseout', (d) -> hideToolTip())
+      .attr('fill', "aquamarine")
 
 
     _graph.append("svg:g")
-    .attr("class", "x axis")
-    .attr("transform", "translate(0," + (height - padding) + ")")
-    .call(xAxis)
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + (height - padding) + ")")
+      .call(xAxis)
 
     _graph.append("svg:g")
-    .attr("class", "y axis")
-    .attr("transform", "translate(" + (xScale(mean)) + ",0)")
-    .call(yAxis)
+      .attr("class", "y axis")
+      .attr("transform", "translate(" + (xScale(mean)) + ",0)")
+      .call(yAxis)
 
     # make x y axis thin
     _graph.selectAll('.x.axis path')
-    .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+      .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
     _graph.selectAll('.y.axis path')
-    .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+      .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
 
 
     _graph.append("svg:g")
-    .append("text")      #text label for the x axis
-    .attr("x", width/2 + width/4  )
-    .attr("y", 20  )
-    .style("text-anchor", "middle")
-    .style("fill", "white")
+      .append("text")      #text label for the x axis
+      .attr("x", width/2 + width/4  )
+      .attr("y", 20  )
+      .style("text-anchor", "middle")
+      .style("fill", "white")
 
     # rotate text on x axis
     _graph.selectAll('.x.axis text')
-    .attr('transform', (d) ->
-       'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
-    .style('font-size', '16px')
+      .attr('transform', (d) ->
+      'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
+      .style('font-size', '16px')
 
     # make y axis ticks not intersect with x-axis, ticks on x and y axes
     # appear to be the same size
     _graph.selectAll('.y.axis text')
-    .attr('transform', (d) ->
-       'translate(' + (this.getBBox().height*-2-5) + ',' + (this.getBBox().height-30) + ')')
-    .style('font-size', '15.7px')
+      .attr('transform', (d) ->
+      'translate(' + (this.getBBox().height*-2-5) + ',' + (this.getBBox().height-30) + ')')
+      .style('font-size', '15.7px')
 
