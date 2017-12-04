@@ -42,7 +42,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
   updateChartData: (data) ->
     if data.dataPoints?
       console.log("updatating chartData")
-      console.log(data)
+      #console.log(data)
       #@stats = @getParams.getParams(data)
       @distribution = data.distribution.name
       console.log("distribution is : " + @distribution)
@@ -55,17 +55,24 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
             r: row[3]
       @stats  = @getParams.getParams(data)
       @params.stats = @stats
+      @router.setParamsByName(@distribution, @params)
+      
+      
       @params.xMin = d3.min(histData, (d)->parseFloat d.x)
       @params.xMax = d3.max(histData, (d)->parseFloat d.x)
-      @modelData = @router.getChartData(@distribution, @params )
+
+
+      #To be added for quantile
+      #lQuantile = @router.getQuantile(@distribution, @params, 0.01)
+      #rQuantile = @router.getQuantile(@distribution, @params, 0.99)
+
+      #console.log("1st percentile: " + lQuantile) 
+      #console.log("99th percentile: "  + rQuantile)
+      #@params.leftBound = Math.min(lQuantile, @params.xMin)
+      #@params.rightBound = Math.max(rQuantile, @params.xMax)
+
       console.log(@distribution)
       console.log(@params)
-      @modelData.stats = @params
-
-      modelData = @router.getChartData(@distribution, @params )
-      modelData.stats = @params
-      @$timeout => @modelData = modelData,
-      5
       @syncData(@params)
       #@loadData()
       #@router.setParams(@distribution, @params)
@@ -85,8 +92,8 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     #@params.stats.variance = parseFloat(@gVariance.toPrecision(4))
 
 
-    @modelData = @router.getChartData(@distribution, @params )
-    @modelData.stats = @params
+    #@modelData = @router.getChartData(@distribution, @params )
+    #@modelData.stats = @params
     modelData = @router.getChartData(@distribution, @params )
     modelData.stats = @params
     @$timeout => @modelData = modelData,
@@ -101,6 +108,12 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
 
 
+  resetGetParams: () ->
+    @stats = @getParams.getParams(@chartData)
+    @params.stats = @stats
+    @syncData(@params)
+
+
   loadData: () ->
     if (@distribution is "Normal")
       @normalRetrieve()
@@ -109,11 +122,13 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       @laplaceRetrieve()
       return
     else if (@distribution is "Cauchy")
-      @cauchyRetrieve()
+      @CauchyRetrieve()
     else if (@distribution is "ChiSquared")
       @ChiSquaredRetrieve()
     else if (@distribution is "LogNormal")
       @LogNormalRetrieve()
+    else if (@distribution is "Maxwell-Boltzman")
+      @MaxBoltRetrieve()
     else if (@distribution is "Exponential")
       @ExponentialRetrieve()
     else
@@ -252,7 +267,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     )
 
 
-  cauchyRetrieve: () ->
+  CauchyRetrieve: () ->
     @currParams = @router.getParamsByName(@distribution)
     @CauchyLocation = @currParams.location
     @CauchyGamma = @currParams.gamma
@@ -274,8 +289,8 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
         @CauchySync()
 
   CauchySliders: () ->
-    cLocation = $("#CauchyLocation")
-    cGamma = $("CauchyGamma")
+    cLocation = $("#CLocation")
+    cGamma = $("#CGamma")
 
     cLocation.slider(
       value: @CauchyLocation,
@@ -436,3 +451,39 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       for s3 in sliders
         s3.slider("enable")
         s3.find('.ui-slider-handle').show()
+
+
+
+
+  MaxBoltRetrieve: () ->
+      @currParams = @router.getParamsByName(@distribution)
+      @MaxBoltA = @currParams.A
+      @MaxBoltSliders()
+      @updateModelData()
+
+
+
+  MaxBoltSync: () ->
+    @params.stats.A = @MaxBoltA
+    @syncData(@params)
+
+
+  MaxBoltPress: (evt) ->
+    name = evt.target.name
+    key = evt.which or evt.keyCode
+    if key is 13
+      if name is "Maxwell-Boltzman"
+        @MaxBoltSync()
+
+  MaxBoltSliders: () ->
+    a = $("#MaxBolt")
+    a.slider(
+      value: @MaxBoltA,
+      min: 0,
+      max: 30,
+      range: "min",
+      step: .2,
+      slide: (event, ui) =>
+        @MaxBoltA = ui.value
+        @MaxBoltSync()
+    )
