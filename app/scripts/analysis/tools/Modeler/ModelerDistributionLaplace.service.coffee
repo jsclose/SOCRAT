@@ -23,8 +23,8 @@ module.exports = class LaplaceDist extends BaseService
 
   pdf: (u, b, x) ->
     return (1 / (2*b))*Math.exp(-(Math.abs(x-u)/b))
-    
-  
+
+
   getLaplaceDistribution: (leftBound, rightBound, u, b) ->
     data = []
     for i in [leftBound...rightBound] by .2
@@ -33,18 +33,24 @@ module.exports = class LaplaceDist extends BaseService
         y: @pdf(u, b, i)
     console.log(data)
     data
-  
+
+  cdf: (u, b, x)->
+    if x < u
+      return 1/(2*b)*Math.exp((x-u)/b)
+    else if x >= u
+      return 1 - 1/(2*b)*Math.exp((x-u)/b)
+
   getChartData: (params) ->
-    curveData = @getLaplaceDistribution(params.xMin, params.xMax, @LaplaceMean , @LaplaceScale)    
+    curveData = @getLaplaceDistribution(params.xMin, params.xMax, @LaplaceMean , @LaplaceScale)
     return curveData
 
 
   getParams: () ->
-    params = 
+    params =
       mean: @LaplaceMean
       scale: @LaplaceScale
 
-  
+
 
   setParams: (newParams) ->
     @LaplaceMean = newParams.stats.mean

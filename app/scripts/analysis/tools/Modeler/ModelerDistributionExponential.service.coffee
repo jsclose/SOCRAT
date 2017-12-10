@@ -32,6 +32,9 @@ module.exports = class ExpDist extends BaseService
         y: @pdf(gamma, i)
     data
 
+  cdf: (x) ->
+    return 1 - Math.pow(e,-1*@gamma*x)
+
   getChartData: (params) ->
 
     curveData = @getExponentialDistribution(params.xMin, params.xMax, @gamma)

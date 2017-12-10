@@ -23,8 +23,8 @@ module.exports = class CauchyDist extends BaseService
 
   cauchy: (l, gamma, x) ->
     return 1 / (Math.PI * gamma *(1 +( Math.pow((x - l) / gamma ,2))))
-    
-  
+
+
   getCauchyDistribution: (leftBound, rightBound, l, gamma) ->
     data = []
     for i in [leftBound...rightBound] by .2
@@ -32,14 +32,16 @@ module.exports = class CauchyDist extends BaseService
         x: i
         y: @cauchy(l, gamma, i)
     data
-  
+
+  cdf: (x) ->
+    return 1/Math.PI * Math.atan((x-@locationParam)/@CauchyGamma) + 1/2
+
   getChartData: (params) ->
-    curveData = @getCauchyDistribution(params.xMin, params.xMax, @locationParam, @CauchyGamma)    
+    curveData = @getCauchyDistribution(params.xMin, params.xMax, @locationParam, @CauchyGamma)
     return curveData
 
-
   getParams: () ->
-    params = 
+    params =
       gamma: @CauchyGamma
       location: @locationParam
 

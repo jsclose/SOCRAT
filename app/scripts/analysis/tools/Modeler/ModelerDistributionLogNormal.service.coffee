@@ -13,7 +13,7 @@ module.exports = class LogNorm extends BaseService
   @inject 'socrat_analysis_modeler_getParams'
   initialize: () ->
 #    @getParams = @socrat_analysis_modeler_getParams
-
+    @calc = @socrat_analysis_modeler_getParams
     @name = 'LogNormal'
     @LogNormalMean = 2
     @LogNormalStdev = 0.5
@@ -24,6 +24,8 @@ module.exports = class LogNorm extends BaseService
   pdf: (stdev, mean, x) ->
     return 1/(x*stdev*Math.sqrt(2*Math.PI))* Math.pow(Math.E,(-1*(Math.pow(Math.log(x)-mean,2))/2*stdev*stdev))
 
+  cdf: (stdev, mean, x) ->
+    return 1/2 + 1/2*calc.erf(((Math.log(x)- mean)/Math.sqrt(2)*stdev))
 
   getLogNormalDistribution: (leftBound, rightBound, stdev, mean) ->
     data = []

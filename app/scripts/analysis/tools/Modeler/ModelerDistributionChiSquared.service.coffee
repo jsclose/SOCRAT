@@ -33,6 +33,7 @@ module.exports = class ChiSqr extends BaseService
     console.log("In te chisquared service!!!!!!!!!!")
     return @factorial(x-1)
 
+  #pdf function
   getChiSquaredDistribution: (leftBound, rightBound, k) ->
     data = []
     for i in [leftBound...rightBound] by 0.2
@@ -41,6 +42,10 @@ module.exports = class ChiSqr extends BaseService
         y: @pdf(k, i)
     console.log(data)
     data
+
+  #cdf function
+  # need to know how to compute the sum from k=0 to k= infinity
+  # lower incomplete gamma function
 
   getChartData: (params) ->
 #    if params.stats.k == undefined
@@ -55,8 +60,6 @@ module.exports = class ChiSqr extends BaseService
   getParams: () ->
     params =
       mean: @k
-
-
 
   setParams: (newParams) ->
     @k = newParams.stats.mean
