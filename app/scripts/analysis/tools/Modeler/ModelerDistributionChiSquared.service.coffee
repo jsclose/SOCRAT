@@ -43,7 +43,7 @@ module.exports = class ChiSqr extends BaseService
     console.log(data)
     data
 
-  #cdf function
+  # CDF function
   # need to know how to compute the sum from k=0 to k= infinity
   # lower incomplete gamma function
 

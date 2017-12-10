@@ -25,8 +25,8 @@ module.exports = class MaxwellBoltzman extends BaseService
     exp = -1* Math.pow(x, 2) / (2* Math.pow(a,2))
     return Math.sqrt(2 / Math.PI) * ((Math.pow(x,2) * Math.pow(Math.E, exp)) / Math.pow(a,3))
 
-  cdf: (x, a) ->
-    return calc.erf(x/(Math.sqrt(2)*2)) - Math.sqrt(2/Math.PI)*x*Math.pow(e,(-1*x*x/(2*a*a)))/a
+  CDF: (x, a) ->
+    return @calc.erf(x/(Math.sqrt(2)*2)) - Math.sqrt(2/Math.PI)*x*Math.pow(Math.E,(-1*x*x/(2*a*a)))/a
 
   getMaxwellBoltzmanDistribution: (leftBound, rightBound, a) ->
     data = []

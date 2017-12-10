@@ -32,8 +32,8 @@ module.exports = class ExpDist extends BaseService
         y: @pdf(gamma, i)
     data
 
-  cdf: (x) ->
-    return 1 - Math.pow(e,-1*@gamma*x)
+  CDF: (x) ->
+    return 1 - Math.pow(Math.E,-1*@gamma*x)
 
   getChartData: (params) ->
 

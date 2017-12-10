@@ -24,7 +24,7 @@ module.exports = class WeiDist extends BaseService
   pdf: (gamma, k, x) ->
     return k/gamma * Math.pow(x/gamma, k-1)* Math.pow(Math.E, -1*Math.pow(x/gamma,k))
 
-  cdf: (gamma, k, x) ->
+  CDF: (gamma, k, x) ->
     if x >= 0
       return 1-Math.pow(Math.E, -1*Math.pow(x/gamma, k))
     else if x < 0

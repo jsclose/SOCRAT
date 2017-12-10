@@ -34,7 +34,7 @@ module.exports = class LaplaceDist extends BaseService
     console.log(data)
     data
 
-  cdf: (u, b, x)->
+  CDF: (u, b, x)->
     if x < u
       return 1/(2*b)*Math.exp((x-u)/b)
     else if x >= u

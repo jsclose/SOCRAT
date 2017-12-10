@@ -24,8 +24,8 @@ module.exports = class LogNorm extends BaseService
   pdf: (stdev, mean, x) ->
     return 1/(x*stdev*Math.sqrt(2*Math.PI))* Math.pow(Math.E,(-1*(Math.pow(Math.log(x)-mean,2))/2*stdev*stdev))
 
-  cdf: (stdev, mean, x) ->
-    return 1/2 + 1/2*calc.erf(((Math.log(x)- mean)/Math.sqrt(2)*stdev))
+  CDF: (stdev, mean, x) ->
+    return 1/2 + 1/2*@calc.erf(((Math.log(x)- mean)/Math.sqrt(2)*stdev))
 
   getLogNormalDistribution: (leftBound, rightBound, stdev, mean) ->
     data = []

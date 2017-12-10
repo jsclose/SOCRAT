@@ -26,6 +26,7 @@ module.exports = class PowerCalcVizDiv extends BaseDirective
       , on
 
       twoTestLegend = () ->
+        console.log("Plotting model data")
         if scope.mainArea.deployed
           $("#displayLegend0").text(scope.mainArea.compAgents[0]+": "+scope.mainArea.twoTestMean1)
           $("#displayLegend1").text(scope.mainArea.compAgents[1]+": "+scope.mainArea.twoTestMean2)

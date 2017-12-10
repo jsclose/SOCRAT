@@ -33,7 +33,7 @@ module.exports = class CauchyDist extends BaseService
         y: @cauchy(l, gamma, i)
     data
 
-  cdf: (x) ->
+  CDF: (x) ->
     return 1/Math.PI * Math.atan((x-@locationParam)/@CauchyGamma) + 1/2
 
   getChartData: (params) ->
