@@ -21,6 +21,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     @stats = null
     @modelData = {}
     @params = {}
+    @tempData = {}
     @getParams = @socrat_analysis_modeler_getParams
     #@gMean = 0
     #@gVariance =0
@@ -46,7 +47,8 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       #@stats = @getParams.getParams(data)
       @distribution = data.distribution.name
       console.log("distribution is : " + @distribution)
-      @chartData = data
+      #@chartData = data
+      @tempData = data
       histData = data.dataPoints
       histData = histData.map (row) ->
             x: row[0]
@@ -63,14 +65,6 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
 
       #To be added for quantile
-      #lQuantile = @router.getQuantile(@distribution, @params, 0.01)
-      #rQuantile = @router.getQuantile(@distribution, @params, 0.99)
-
-      #console.log("1st percentile: " + lQuantile) 
-      #console.log("99th percentile: "  + rQuantile)
-      #@params.leftBound = Math.min(lQuantile, @params.xMin)
-      #@params.rightBound = Math.max(rQuantile, @params.xMax)
-
       console.log(@distribution)
       console.log(@params)
       @syncData(@params)
@@ -86,20 +80,46 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
   updateModelData: () ->
     console.log("Updating Model Data from Sliders")
-
-    #@params.stats.mean = parseFloat(@gMean.toPrecision(4))
-    #@params.stats.standardDev = parseFloat(@gstandardDev.toPrecision(4))
-    #@params.stats.variance = parseFloat(@gVariance.toPrecision(4))
-
-
+   
     #@modelData = @router.getChartData(@distribution, @params )
     #@modelData.stats = @params
+    #modelData = @router.getChartData(@distribution, @params )
+    #modelData.stats = @params
+    
+    xBounds = @getXbounds(@params, @distribution)
+    @params.xMin = xBounds.xMin
+    @params.xMax = xBounds.xMax
     modelData = @router.getChartData(@distribution, @params )
     modelData.stats = @params
+    #tempData.bounds = xBounds
+    @tempData.bounds =  @getYBounds(modelData)
+    @chartData = @tempData
+    console.log "updating chart data"
+    #@$timeout => @chartData = @tempData,
+    #5
+
     @$timeout => @modelData = modelData,
     5
 
 
+  getXbounds: (@params, @distribution) ->
+      dataSetxMin = @params.xMin
+      dataSetxMax = @params.xMax
+      
+      modelDataFirstQuantile = @router.getQuantile(@distribution, @params, 0.01)
+      modelDataNNQuantile = @router.getQuantile(@distribution, @params, 0.99)
+      xMin = Math.min(modelDataFirstQuantile, dataSetxMin)
+      xMax = Math.max(modelDataNNQuantile, dataSetxMax)
+      #buggggggy value
+      bounds =
+        xMin: xMin
+        xMax: xMax
+        
+
+  getYBounds: (modelData) ->
+      modelDataYMax = d3.max(modelData, (d)->parseFloat d.y)
+      bounds =
+        yMax: modelDataYMax
   syncData: (dataIn) ->
     @router.setParamsByName(@distribution, dataIn)
     @loadData()
@@ -172,7 +192,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     nVariance = $("#NormalVariance")
     nMean.slider(
       value: @NormalMean,
-      min: 0,
+      min: 0.01,
       max: 30,
       range: "min",
       step: .5,
@@ -183,7 +203,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
     nStDev.slider(
       value: @NormalStDev,
-      min: 0,
+      min: 0.01,
       max: 10,
       range: "min",
       step: .2,
@@ -194,7 +214,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
     nVariance.slider(
       value: @NormalVariance,
-      min: 0,
+      min: 0.01,
       max: 10,
       range: "min",
       step: 0.2,
@@ -246,7 +266,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
     lMean.slider(
       value: @LaplaceMean,
-      min: 0,
+      min: 0.01,
       max: 30,
       range: "min",
       step: .5,
@@ -257,7 +277,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
     lScale.slider(
       value: @LaplaceScale,
-      min: 0,
+      min: 0.01,
       max: 10,
       range: "min",
       step: .2,
@@ -294,7 +314,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
     cLocation.slider(
       value: @CauchyLocation,
-      min: 0,
+      min: 0.01,
       max: 10,
       range: "min",
       step: .2,
@@ -307,7 +327,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
     cGamma.slider(
       value: @CauchyGamma,
-      min: 0,
+      min: 0.01,
       max: 10,
       range: "min",
       step: .2,
@@ -342,7 +362,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
     kMean.slider(
       value: @k,
-      min: 0,
+      min: 0.01,
       max: 10,
       range: "min",
       step: .5,
@@ -378,7 +398,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
     ExpGam.slider(
       value: @gamma,
-      min: 0,
+      min: 0.01,
       max: 10,
       range: "min",
       step: .5,
@@ -418,7 +438,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     logStDev = $("#LogNormalStDev")
     logMean.slider(
       value: @LogNormalMean,
-      min: 0,
+      min: 0.01,
       max: 10,
       range: "min",
       step: .1,
@@ -429,7 +449,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
     logStDev.slider(
       value: @LogNormalStDev,
-      min: 0,
+      min: 0.01,
       max: 10,
       range: "min",
       step: .2,
@@ -479,7 +499,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     a = $("#MaxBolt")
     a.slider(
       value: @MaxBoltA,
-      min: 0,
+      min: 0.01,
       max: 30,
       range: "min",
       step: .2,
